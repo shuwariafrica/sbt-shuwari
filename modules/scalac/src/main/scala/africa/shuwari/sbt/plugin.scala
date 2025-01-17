@@ -3,9 +3,8 @@ package africa.shuwari.sbt
 import org.typelevel.sbt.tpolecat.{CiMode, OptionsMode, ReleaseMode, TpolecatPlugin, VerboseMode}
 import sbt.{Def, *}
 
-/** Plugin to integrate build modes and compiler options into sbt projects.
-  */
-object ScalaOptionsPlugin extends AutoPlugin {
+/** Plugin to integrate build modes and compiler options into sbt projects. */
+object ScalacOptionsPlugin extends AutoPlugin {
 
   object autoImport {
     final val ScalaCompiler = ScalacKeys
@@ -16,8 +15,7 @@ object ScalaOptionsPlugin extends AutoPlugin {
   override def requires: Plugins = BuildModePlugin && TpolecatPlugin
   override def trigger: PluginTrigger = allRequirements
 
-  /** Dynamically set the tpolecat mode (VerboseMode, CiMode, ReleaseMode) based on the `buildMode`.
-    */
+  /** Dynamically set the tpolecat mode (VerboseMode, CiMode, ReleaseMode) based on the `buildMode`. */
   private def tpolecatPluginModeSetting: Def.Initialize[OptionsMode] =
     Def.setting(BuildModePlugin.buildMode.value match {
       case BuildModePlugin.Mode.Development => VerboseMode
