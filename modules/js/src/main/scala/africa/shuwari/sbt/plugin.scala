@@ -25,11 +25,13 @@ object JSPlugin extends AutoPlugin {
   }
 
   object autoImport {
-    val shuwarijs = JSKeys
+    object shuwarijs {
+      final val basePackages = ScalacKeys.basePackages
+    }
   }
 
   def defaultLinkerConfigOptions = Def.setting {
-    val basePackages = JSKeys.basePackages.value
+    val basePackages = ScalacKeys.basePackages.value
     def splitStyle = if (basePackages.nonEmpty)
       ModuleSplitStyle.SmallModulesFor(basePackages)
     else if (BuildModePlugin.buildMode.value === BuildModePlugin.Mode.Development) ModuleSplitStyle.FewestModules

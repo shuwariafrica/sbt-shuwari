@@ -2,7 +2,7 @@ package africa.shuwari.sbt
 
 import sbt.*
 
-object JSKeys {
+object ScalacKeys {
 
   val basePackages = settingKey[List[String]](
     "Base package name. Used to enable, and limit inlining to the specified pattern."

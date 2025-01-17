@@ -1,9 +1,4 @@
-.bloop/
-.bsp/
-.idea/
-.mdoc/
-.metals/
-.sbt-shuwari*/
-.vscode/
+.*/
+!.github/
 metals.sbt
 target/
