@@ -104,9 +104,9 @@ object ShuwariCorePlugin extends AutoPlugin {
       version
     )
 
-  private def commonSettings = commonKeys.map(fromRoot(_))
+  private def commonSettings: Set[Setting[?]] = commonKeys.map(fromRoot(_))
 
-  private def baseProjectSettings =
+  private def baseProjectSettings: Seq[Setting[?]] =
     projectKeys.map(fromRoot(_)) + pomIncludeRepositorySetting
 
   @inline private[sbt] def fromRoot[A](key: SettingKey[A]): Setting[A] =
