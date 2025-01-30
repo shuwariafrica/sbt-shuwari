@@ -68,7 +68,7 @@ lazy val `sbt-shuwari-js` =
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
     .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
-    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.17.0"))
+    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.18.2"))
 
 lazy val `sbt-shuwari-cross` =
   project
