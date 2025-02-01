@@ -43,7 +43,7 @@ Report any issues via the [issue tracker](https://dev.azure.com/shuwari/sbt-shuw
 To include all core plugins in your build, add the following to `plugins.sbt`:
 
 ```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari" % "0.14.0")
+addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari" % "0.14.1")
 ```
 
 Individual plugins can also be added selectively by specifying their dependencies. See the specific plugin details
@@ -59,7 +59,7 @@ All core plugins are **AutoPlugins**, meaning they are enabled automatically if 
 <summary>ShuwariCorePlugin</summary>
 
 ```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-core" % "0.14.0")
+addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-core" % "0.14.1")
 ```
 
 ### Features:
@@ -114,7 +114,7 @@ lazy val myProject = project
 <summary>ShuwariHeaderPlugin</summary>
 
 ```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-header" % "0.14.0")
+addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-header" % "0.14.1")
 ```
 
 ### Features:
@@ -150,7 +150,7 @@ lazy val project = (project in file("."))
 <summary>BuildModePlugin</summary>
 
 ```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-mode" % "0.14.0")
+addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-mode" % "0.14.1")
 ```
 
 ### Features:
@@ -182,7 +182,7 @@ ThisBuild / buildMode := Mode.Release
 <summary>ScalacOptionsPlugin</summary>
 
 ```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-scalac" % "0.14.0")
+addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-scalac" % "0.14.1")
 ```
 
 ### Features:
@@ -219,7 +219,7 @@ addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-scalac" % "0.14.0")
 <summary>ShuwariJsPlugin</summary>
 
 ```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-js" % "0.14.0")
+addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-js" % "0.14.1")
 ```
 
 ### Available Configuration Keys
