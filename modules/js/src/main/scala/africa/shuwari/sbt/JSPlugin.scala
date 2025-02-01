@@ -2,9 +2,12 @@ package africa.shuwari.sbt
 
 import org.scalajs.linker.interface.*
 import org.scalajs.sbtplugin.ScalaJSPlugin
-import org.typelevel.sbt.tpolecat.TpolecatPlugin
-import org.typelevel.scalacoptions.{ScalacOption, ScalacOptions}
+import org.typelevel.scalacoptions.ScalacOption
+import org.typelevel.scalacoptions.ScalacOptions
+
 import sbt.*
+
+import africa.shuwari.sbt.ScalacKeys.compilerOptions
 
 object JSPlugin extends AutoPlugin {
 
@@ -17,20 +20,21 @@ object JSPlugin extends AutoPlugin {
 
     Seq(
       scalaJSLinkerConfig := defaultLinkerConfigOptions.value,
-      TpolecatPlugin.autoImport.tpolecatExcludeOptions ++= excludeJSIncompatibleOptions
+      compilerOptions := compilerOptions.value.diff(excludeJSIncompatibleOptions),
+      (Test / compilerOptions) := (Test / compilerOptions).value.diff(excludeJSIncompatibleOptions)
     )
   }
 
   /** Default Scala.js linker configuration */
-  def defaultLinkerConfigOptions = Def.setting {
+  def defaultLinkerConfigOptions: Def.Initialize[StandardConfig] = Def.setting {
     val basePackages = ScalacKeys.basePackages.value
 
     val splitStyle = BuildModePlugin.buildMode.value match {
       case BuildModePlugin.Mode.Development =>
-        if (basePackages.nonEmpty) ModuleSplitStyle.SmallModulesFor(basePackages)
+        if (basePackages.nonEmpty) ModuleSplitStyle.SmallModulesFor(basePackages.toList)
         else ModuleSplitStyle.FewestModules
       case _ =>
-        if (basePackages.nonEmpty) ModuleSplitStyle.SmallModulesFor(basePackages)
+        if (basePackages.nonEmpty) ModuleSplitStyle.SmallModulesFor(basePackages.toList)
         else ModuleSplitStyle.SmallestModules
     }
 

@@ -8,6 +8,7 @@ import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderPattern
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.*
 import de.heikoseeberger.sbtheader.License
 import de.heikoseeberger.sbtheader.LicenseDetection
+
 import sbt.Def
 import sbt.Keys.*
 import sbt.URL

@@ -15,8 +15,8 @@ object BuildModePlugin extends AutoPlugin {
   }
 
   object autoImport {
-    def Mode = BuildModePlugin.Mode
-    def buildMode = BuildModePlugin.buildMode
+    final val Mode = BuildModePlugin.Mode
+    def buildMode: SettingKey[Mode] = BuildModePlugin.buildMode
   }
 
   override def trigger: PluginTrigger = allRequirements
