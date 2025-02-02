@@ -90,8 +90,7 @@ object ScalaCompilerOptions {
     modeScalacOptions: Set[ScalacOption]
   ): Set[ScalacOption] =
     (CrossVersion.partialVersion(version), version.split('.')) match {
-      case (Some((maj, min)), Array(maj2, min2, patch))
-          if maj.toString == maj2 && min.toString == min2 => // scalafix:ok
+      case (Some((maj, min)), Array(maj2, min2, patch)) if maj.toString == maj2 && min.toString == min2 => // scalafix:ok
         val patchVersion = patch.takeWhile(_.isDigit)
         val binaryVersion = ScalaVersion(maj, min, Try(patchVersion.toLong).getOrElse(0))
         ScalacOptions.optionsForVersion(binaryVersion, modeScalacOptions)
