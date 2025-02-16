@@ -24,7 +24,7 @@ object ScalacOptionsPlugin extends AutoPlugin {
     basePackages := Set.empty, // Initialize `basePackages` as empty by default,
     compilerOptions := effectiveOptions(scalaVersion.value, buildMode.value, basePackages.value),
     Test / compilerOptions := testOptions((Compile / compilerOptions).value),
-    Compile / Keys.compile / Keys.scalacOptions := optionsList(compilerOptions.value),
-    Test / Keys.compile / Keys.scalacOptions := optionsList((Test / compilerOptions).value)
+    Compile / Keys.compile / Keys.scalacOptions ++= optionsList(compilerOptions.value),
+    Test / Keys.compile / Keys.scalacOptions ++= optionsList((Test / compilerOptions).value)
   )
 }
