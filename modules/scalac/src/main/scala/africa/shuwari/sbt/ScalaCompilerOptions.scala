@@ -33,6 +33,9 @@ object ScalaCompilerOptions {
   /** Limit the maximum number of inline calls allowed in Scala 3. */
   def maxInlines: ScalacOption = options.advancedOption("max-inlines:64", dottyOnly)
 
+  /** Disable universal equality in Scala 3. */
+  def strictEquality: ScalacOption = options.languageStrictEquality
+
   /** Default compiler options */
   val defaultOptions: Set[ScalacOption] = options.default ++ options.fatalWarningOptions ++ Set(
     options.explain,
@@ -41,7 +44,8 @@ object ScalaCompilerOptions {
     checkReentrant,
     explicitNulls,
     requireTargetName,
-    maxInlines
+    maxInlines,
+    strictEquality,
   )
 
   /** Returns the effective compiler options based on the Scala version and build mode.
