@@ -45,7 +45,7 @@ object ScalaCompilerOptions {
     explicitNulls,
     requireTargetName,
     maxInlines,
-    strictEquality,
+    strictEquality
   )
 
   /** Returns the effective compiler options based on the Scala version and build mode.
