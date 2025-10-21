@@ -58,7 +58,7 @@ lazy val `sbt-shuwari-version` =
     .in(modules("version"))
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
-    .settings(addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.0"))
+    .settings(addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.1"))
 
 lazy val `sbt-shuwari` =
   project
