@@ -1,18 +1,17 @@
 package africa.shuwari.sbt
 
-import de.heikoseeberger.sbtheader.CommentCreator
-import de.heikoseeberger.sbtheader.CommentStyle
-import de.heikoseeberger.sbtheader.FileType
-import de.heikoseeberger.sbtheader.HeaderPlugin
-import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderPattern
-import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.*
-import de.heikoseeberger.sbtheader.License
-import de.heikoseeberger.sbtheader.LicenseDetection
-
 import sbt.Def
 import sbt.Keys.*
 import sbt.URL
 import sbt.*
+import sbtheader.CommentCreator
+import sbtheader.CommentStyle
+import sbtheader.FileType
+import sbtheader.HeaderPlugin
+import sbtheader.HeaderPlugin.autoImport.HeaderPattern
+import sbtheader.HeaderPlugin.autoImport.*
+import sbtheader.License
+import sbtheader.LicenseDetection
 
 import scala.language.implicitConversions
 

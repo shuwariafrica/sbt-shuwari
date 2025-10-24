@@ -42,7 +42,7 @@ lazy val `sbt-shuwari-header` =
     .in(modules("header"))
     .dependsOn(`sbt-shuwari-core`)
     .enablePlugins(SbtPlugin)
-    .settings(addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.10.0"))
+    .settings(addSbtPlugin("com.github.sbt" % "sbt-header" % "5.11.0"))
     .settings(publishSettings)
 
 lazy val `sbt-shuwari-scalac` =
@@ -50,7 +50,7 @@ lazy val `sbt-shuwari-scalac` =
     .in(modules("scalac"))
     .enablePlugins(SbtPlugin)
     .dependsOn(`sbt-shuwari-mode`)
-    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.7")
+    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.8")
     .settings(publishSettings)
 
 lazy val `sbt-shuwari-version` =
@@ -58,7 +58,7 @@ lazy val `sbt-shuwari-version` =
     .in(modules("version"))
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
-    .settings(addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.0"))
+    .settings(addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.1"))
 
 lazy val `sbt-shuwari` =
   project
@@ -73,7 +73,7 @@ lazy val `sbt-shuwari-js` =
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
     .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
-    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.17.0"))
+    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.20.1"))
 
 lazy val `sbt-shuwari-cross` =
   project
