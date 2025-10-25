@@ -63,7 +63,7 @@ object ScalaCompilerOptions {
       scalaVersion,
       mode match {
         case Development => defaultOptions
-        case _ =>
+        case _           =>
           if (basePackages.nonEmpty)
             defaultOptions ++ options.optimizerOptions(basePackages.toSeq*) + options.optimizerWarnings
           else defaultOptions
