@@ -18,7 +18,7 @@ inThisBuild(
     ),
     scalacOptions ++= List("-feature", "-deprecation"),
     startYear := Some(2022),
-    sonatypeCredentialHost := "s01.oss.sonatype.org",
+    sonatypeCredentialHost := Sonatype.sonatypeCentralHost,
     publishCredentials,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision
@@ -145,8 +145,8 @@ def publishSettings = publishCredentials +: pgpSettings ++: List(
     Developer(
       id = "shuwaridev",
       name = "Shuwari Developer Team",
-      email = "dev at shuwari com",
-      url = url("https://shuwari.com/dev")
+      email = "dev at shuwari africa",
+      url = url("https://shuwari.africa/dev")
     )
   ),
   pomIncludeRepository := (_ => false),
