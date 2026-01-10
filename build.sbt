@@ -1,11 +1,10 @@
 inThisBuild(
   List(
+    scalaVersion := "3.7.3",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
     organizationHomepage := Some(url("https://shuwari.africa/dev")),
-    licenses := List(
-      "Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0")
-    ),
+    licenses := List("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0")),
     description := "Collection of sbt plugins for easy initialisation of uniform organisation wide default project settings.",
     homepage := Some(url("https://github.com/shuwariafrica/sbt-shuwari")),
     version := versionSetting.value,
@@ -18,8 +17,6 @@ inThisBuild(
     ),
     scalacOptions ++= List("-feature", "-deprecation"),
     startYear := Some(2022),
-    sonatypeCredentialHost := Sonatype.sonatypeCentralHost,
-    publishCredentials,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision
   )
@@ -49,6 +46,7 @@ lazy val `sbt-shuwari-scalac` =
   project
     .in(modules("scalac"))
     .enablePlugins(SbtPlugin)
+    .dependsOn(`sbt-shuwari-core`)
     .dependsOn(`sbt-shuwari-mode`)
     .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.8")
     .settings(publishSettings)
@@ -67,21 +65,21 @@ lazy val `sbt-shuwari` =
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
 
-lazy val `sbt-shuwari-js` =
-  project
-    .in(modules("js"))
-    .enablePlugins(SbtPlugin)
-    .settings(publishSettings)
-    .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
-    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.20.1"))
+// lazy val `sbt-shuwari-js` =
+//   project
+//     .in(modules("js"))
+//     .enablePlugins(SbtPlugin)
+// //    .settings(publishSettings)
+//     .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
+//     .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.20.1"))
 
-lazy val `sbt-shuwari-cross` =
-  project
-    .in(modules("cross"))
-    .enablePlugins(SbtPlugin)
-    .dependsOn(`sbt-shuwari`)
-    .settings(publishSettings)
-    .settings(addSbtPlugin("org.portable-scala" % "sbt-crossproject" % "1.3.2"))
+// lazy val `sbt-shuwari-cross` =
+//   project
+//     .in(modules("cross"))
+//     .enablePlugins(SbtPlugin)
+//     .dependsOn(`sbt-shuwari`)
+// //    .settings(publishSettings)
+//     .settings(addSbtPlugin("org.portable-scala" % "sbt-crossproject" % "1.3.2"))
 
 lazy val `sbt-shuwari-documentation` =
   project
@@ -99,35 +97,22 @@ lazy val `sbt-shuwari-documentation` =
 lazy val `sbt-shuwari-build-root` =
   project
     .in(file("."))
+    .enablePlugins(SbtPlugin)
+    .settings(publish / skip := true)
     .aggregate(
       `sbt-shuwari-mode`,
       `sbt-shuwari-header`,
       `sbt-shuwari-scalac`,
       `sbt-shuwari-core`,
       `sbt-shuwari-version`,
-      `sbt-shuwari`,
-      `sbt-shuwari-cross`,
-      `sbt-shuwari-js`
-    )
-    .enablePlugins(SbtPlugin)
-    .settings(
-      publish := {},
-      publish / skip := true,
-      sonatypeProfileName := "africa.shuwari"
+      `sbt-shuwari`
+      // `sbt-shuwari-cross`,
+      // `sbt-shuwari-js`,
     )
 
 def modules(name: String) = file(s"./modules/$name")
 
-def publishCredentials = credentials := List(
-  Credentials(
-    "Sonatype Nexus Repository Manager",
-    sonatypeCredentialHost.value,
-    System.getenv("PUBLISH_USER"),
-    System.getenv("PUBLISH_USER_PASSPHRASE")
-  )
-)
-
-def publishSettings = publishCredentials +: pgpSettings ++: List(
+def publishSettings = pgpSettings ++: List(
   packageOptions += Package.ManifestAttributes(
     "Created-By" -> "Simple Build Tool",
     "Built-By" -> System.getProperty("user.name"),
@@ -140,7 +125,11 @@ def publishSettings = publishCredentials +: pgpSettings ++: List(
     "Implementation-Vendor-Id" -> organization.value,
     "Implementation-Vendor" -> organizationName.value
   ),
-  publishTo := sonatypePublishToBundle.value,
+  publishTo := {
+    val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+    if (version.value.toLowerCase.contains("snapshot")) Some("central-snapshots".at(centralSnapshots))
+    else localStaging.value
+  },
   developers := List(
     Developer(
       id = "shuwaridev",

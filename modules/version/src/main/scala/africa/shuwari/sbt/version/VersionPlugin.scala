@@ -9,14 +9,13 @@ import sbt.*
 import sbtdynver.DynVerPlugin
 import sbtdynver.DynVerPlugin.autoImport.*
 
-object VersionPlugin extends AutoPlugin {
+object VersionPlugin extends AutoPlugin:
 
   override def requires: Plugins = DynVerPlugin
   override def trigger = allRequirements
 
-  object autoImport {
+  object autoImport:
     val fullVersion = settingKey[String]("Full version, including attached metadata of the project.")
-  }
 
   override def projectSettings: Seq[Def.Setting[?]] = Seq(
     version := versionSetting.value,
@@ -35,7 +34,6 @@ object VersionPlugin extends AutoPlugin {
       "Build-Jdk-Vendor" -> sys.props("java.vendor"),
       "Build-Tool" -> s"sbt ${sbtVersion.value}",
       "Build-Scala-Version" -> scalaVersion.value,
-      "Built-By" -> sys.props("user.name"),
       "Build-Date" -> buildDate
     )
   }
@@ -45,20 +43,18 @@ object VersionPlugin extends AutoPlugin {
 
   private def baseVersionSetting(appendMetadata: Boolean): Def.Initialize[String] = Def.setting {
     dynverGitDescribeOutput.value.mkVersion(
-      (in: sbtdynver.GitDescribeOutput) => {
-        val meta = if (appendMetadata) s"+${in.commitSuffix.distance}.${in.commitSuffix.sha}" else ""
-        if (!in.isSnapshot()) in.ref.dropPrefix
-        else {
+      (in: sbtdynver.GitDescribeOutput) =>
+        val meta = if appendMetadata then s"+${in.commitSuffix.distance}.${in.commitSuffix.sha}" else ""
+        if !in.isSnapshot() then in.ref.dropPrefix
+        else
           val parts = in.ref.dropPrefix.split("\\.").map(_.toInt)
           val lastIndex = parts.length - 1
           val incrementedParts = parts.updated(lastIndex, parts(lastIndex) + 1).map(_.toString)
           s"${incrementedParts.mkString(".")}-SNAPSHOT$meta"
-        }
-      },
-      "SNAPSHOT"
+      ,
+      "0.1.0-SNAPSHOT"
     )
   }
 
   private def versionSetting = baseVersionSetting(appendMetadata = false)
   private def implementationVersionSetting = baseVersionSetting(appendMetadata = true)
-}

@@ -50,10 +50,9 @@ object JSPlugin extends AutoPlugin {
 
   /** Scala.js-incompatible scalac options to be excluded */
   private def excludeJSIncompatibleOptions: Set[ScalacOption] = Set(
-    ScalaCompilerOptions.explicitNulls, // Explicit nulls are not fully compatible with Scala.js
     ScalaCompilerOptions.checkMods, // Modifier checks are JVM-specific
     ScalaCompilerOptions.checkReentrant // Reentrant checks are JVM-specific
-  ) ++ ScalacOptions.fatalWarningOptions // Too strict for typical JS workflows
+  )
 
   /** Optimization level based on build mode */
   private def adjustedLinkerConfig(buildMode: BuildModePlugin.Mode, config: StandardConfig): StandardConfig =

@@ -13,14 +13,12 @@ import sbtheader.HeaderPlugin.autoImport.*
 import sbtheader.License
 import sbtheader.LicenseDetection
 
+import africa.shuwari.sbt.ShuwariHeaderImports.*
+
 import scala.language.implicitConversions
 
-object ShuwariHeaderPlugin extends AutoPlugin {
-
-  val headerCopyrightHolder = settingKey[Option[String]](
-    "The name of the organization or individual that holds the copyright."
-  )
-
+object ShuwariHeaderPlugin extends AutoPlugin:
+  val autoImport = ShuwariHeaderImports
   override def requires: Plugins = ShuwariCorePlugin && HeaderPlugin
 
   override def trigger: PluginTrigger = allRequirements
@@ -37,18 +35,8 @@ object ShuwariHeaderPlugin extends AutoPlugin {
       headerMappings.value ++ scalaCommentStyleTypes
     },
     headerEmptyLine := false,
-    headerLicense := defaultLicensing.value,
-    ShuwariCorePlugin.fromRoot(headerCopyrightHolder)
+    headerLicense := defaultHeaderLicense.value
   )
-
-  object autoImport {
-    implicit def toProjectOps(p: Project): ProjectOpts = ProjectOpts(p)
-
-    def headerCopyrightHolder: SettingKey[Option[String]] = ShuwariHeaderPlugin.headerCopyrightHolder
-    def internalSoftware: Setting[Seq[(String, URL)]] = internalLicenseSetting
-    def apacheLicensed: Setting[Seq[(String, URL)]] = apacheLicenseSetting
-    def gplv3Licensed: Setting[Seq[(String, URL)]] = gplv3LicenseSetting
-  }
 
   final private case class DefaultBlockCommentCreator(
     commentPrefix: String,
@@ -60,9 +48,9 @@ object ShuwariHeaderPlugin extends AutoPlugin {
     indentSize: Int,
     preLengthModifier: Int,
     postLengthModifier: Int
-  ) extends CommentCreator {
+  ) extends CommentCreator:
 
-    override def apply(text: String, existingText: Option[String]): String = {
+    override def apply(text: String, existingText: Option[String]): String =
       val longestLineSize = text.linesIterator.map(_.length).max
 
       val maxLength =
@@ -73,25 +61,21 @@ object ShuwariHeaderPlugin extends AutoPlugin {
       val indent = padding(indentSize)
 
       def processLines(line: String) =
-        (line, linePrefix, lineSuffix) match {
+        (line, linePrefix, lineSuffix) match
           case (str, pre, post) =>
             def first = s"$indent$pre $str"
             s"$first${padding(maxLength - (first.length + post.length))} $post"
-        }
 
       def firstLine =
         s"$commentPrefix${boundaryCharacter * (preLengthModifier + maxLength - commentPrefix.length)}"
 
       def lastLine =
-        s"${if (postIndent) indent else ""}${commentSuffix
+        s"${if postIndent then indent else ""}${commentSuffix
             .map(str => (boundaryCharacter * (postLengthModifier + maxLength - (str.length + indent.length))) + str)
             .getOrElse(firstLine)}"
 
       (firstLine +: text.linesIterator.toList.map(processLines) :+ lastLine)
         .mkString(System.lineSeparator)
-
-    }
-  }
 
   private val scalaBlockCommentStyle: CommentStyle = CommentStyle(
     DefaultBlockCommentCreator(
@@ -108,23 +92,25 @@ object ShuwariHeaderPlugin extends AutoPlugin {
     HeaderPattern.commentBetween("""/\*+""", "*", """\*/""")
   )
 
-  private def defaultLicensing: Def.Initialize[Option[License]] = {
+  private def defaultHeaderLicense: Def.Initialize[Option[License]] =
     val apacheLicensePattern =
       """(?i)\bapache[- ]license[- ]2\.0|apache[- ]2\.0|apache-2\.0|apache\s*2\.0|apache-2\.0\b""".r
     val gplv3Pattern =
       """(?i)\bgpl[- ]v3|gnu[- ]gpl[- ]v3|gnu[- ]general[- ]public[- ]license[- ]v3|gpl[- ]3\.0|gpl[- ]3|gnu[- ]gpl[- ]3\.0|gnu[- ]gpl[- ]3|gpl-3\.0\b""".r
 
+    val mitPattern = """(?i)\bmit\b""".r
+
     Def.setting {
       val licensesList = licenses.value.toList
 
       val matchedLicense = licensesList.collectFirst {
-        case (name, _) if apacheLicensePattern.findFirstIn(name).isDefined => Headers.apacheLicenseHeader.value
-        case (name, _) if gplv3Pattern.findFirstIn(name).isDefined         => Headers.gplv3LicenseHeader.value
+        case l if apacheLicensePattern.findFirstIn(l.spdxId).isDefined => Headers.apacheLicenseHeader.value
+        case l if gplv3Pattern.findFirstIn(l.spdxId).isDefined         => Headers.gplv3LicenseHeader.value
+        case l if mitPattern.findFirstIn(l.spdxId).isDefined           => Headers.mitLicenseHeader.value
       }
 
       matchedLicense.orElse(
-        if (licensesList.isEmpty)
-          Some(Headers.internalSoftwareHeader.value)
+        if licensesList.isEmpty then Some(Headers.internalSoftwareHeader.value)
         else
           LicenseDetection(
             licensesList,
@@ -135,17 +121,29 @@ object ShuwariHeaderPlugin extends AutoPlugin {
           )
       )
     }
-  }
 
-  object Headers {
-    private def end(str: String): String =
-      if (str.endsWith(".")) str else str + "."
+  object Headers:
+
+    private inline def developmentTimeline =
+      import java.time.Year
+      val start = startYear.value.get
+      val current: Int = Year.now.getValue
+      (start, current) match
+        case (s, c) if s > c =>
+          throw new RuntimeException(
+            "Invalid `startYear` or system date value. Start year cannot be after the current year."
+          ) // scalafix:ok
+        case (s, c) if s < c => s"$s, $c"
+        case (_, c)          => c
+
+    private inline def end(str: String): String =
+      if str.endsWith(".") then str else str + "."
 
     def apacheLicenseHeader: Def.Initialize[License.Custom] =
       Def.setting {
         def copyRightHolder = headerCopyrightHolder.value.getOrElse(Keys.organizationName.value)
         License.Custom(
-          s"""|Copyright © ${end(copyRightHolder)}
+          s"""|Copyright © $developmentTimeline ${end(copyRightHolder)}
               |
               |This file is licensed to you under the terms of the Apache
               |License Version 2.0 (the "License"); you may not use this
@@ -190,9 +188,40 @@ object ShuwariHeaderPlugin extends AutoPlugin {
         )
       }
 
+    def mitLicenseHeader: Def.Initialize[License.Custom] =
+      Def.setting {
+        def copyRightHolder = headerCopyrightHolder.value.getOrElse(Keys.organizationName.value)
+        License.Custom(
+          s"""|Copyright © ${end(copyRightHolder)}
+              |
+              |Permission is hereby granted, free of charge, to any person
+              |obtaining a copy of this software and associated
+              |documentation files (the "Software"), to deal in the
+              |Software without restriction, including without limitation
+              |the rights to use, copy, modify, merge, publish, distribute,
+              |sublicense, and/or sell copies of the Software, and to permit
+              |persons to whom the Software is furnished to do so, subject
+              |to the following conditions:
+              |
+              |The above copyright notice and this permission notice shall
+              |be included in all copies or substantial portions of the
+              |Software.
+              |
+              |THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+              |KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+              |WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+              |PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+              |OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+              |OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+              |OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+              |SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+              |""".stripMargin
+        )
+      }
+
     def internalSoftwareHeader: Def.Initialize[License.Custom] =
       Def.setting {
-        def organizationName = Keys.organizationName.value
+        def organizationName = headerCopyrightHolder.value.getOrElse(Keys.organizationName.value)
         License.Custom(
           s"""|Copyright © ${end(organizationName)} All rights reserved.
               |
@@ -203,21 +232,3 @@ object ShuwariHeaderPlugin extends AutoPlugin {
               |""".stripMargin
         )
       }
-  }
-
-  private def internalLicenseSetting: Def.Setting[Seq[(String, URL)]] = licenses := Seq.empty
-
-  private def apacheLicenseSetting: Def.Setting[Seq[(String, URL)]] = licenses := List(
-    "Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt")
-  )
-
-  private def gplv3LicenseSetting: Def.Setting[Seq[(String, URL)]] = licenses := List(
-    "GPL-3.0" -> url("https://www.gnu.org/licenses/gpl-3.0.en.html#license-text")
-  )
-
-  final case class ProjectOpts(p: Project) extends AnyVal {
-    def internalSoftware: Project = p.settings(internalLicenseSetting)
-    def apacheLicensed: Project = p.settings(apacheLicenseSetting)
-    def gplv3Licensed: Project = p.settings(gplv3LicenseSetting)
-  }
-}
