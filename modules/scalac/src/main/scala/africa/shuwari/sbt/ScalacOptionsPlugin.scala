@@ -1,9 +1,9 @@
 package africa.shuwari.sbt
 
 import sbt.Keys.scalaVersion
-import sbt.*
+import sbt._
 
-import africa.shuwari.sbt.ScalacOptionsPluginImport.*
+import africa.shuwari.sbt.ScalacOptionsPluginImport._
 
 /** Plugin to integrate build modes and compiler options into sbt projects. */
 object ScalacOptionsPlugin extends AutoPlugin:

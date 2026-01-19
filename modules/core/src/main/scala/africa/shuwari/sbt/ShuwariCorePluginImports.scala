@@ -2,7 +2,7 @@ package africa.shuwari.sbt
 
 import sbt.Def
 import sbt.Developer
-import sbt.Keys.*
+import sbt.Keys._
 import sbt.ModuleID
 import sbt.Project
 import sbt.Setting

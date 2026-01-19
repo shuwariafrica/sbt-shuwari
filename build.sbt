@@ -1,14 +1,12 @@
 inThisBuild(
   List(
-    scalaVersion := "3.7.3",
+    scalaVersion := "3.8.0",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
     organizationHomepage := Some(url("https://shuwari.africa/dev")),
     licenses := List("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0")),
     description := "Collection of sbt plugins for easy initialisation of uniform organisation wide default project settings.",
     homepage := Some(url("https://github.com/shuwariafrica/sbt-shuwari")),
-    version := versionSetting.value,
-    dynver := versionSetting.toTaskable.toTask.value,
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/unganisha/sbt-shuwari"),
@@ -22,19 +20,19 @@ inThisBuild(
   )
 )
 
-lazy val `sbt-shuwari-core` =
+val `sbt-shuwari-core` =
   project
     .in(modules("core"))
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
 
-lazy val `sbt-shuwari-mode` =
+val `sbt-shuwari-mode` =
   project
     .in(modules("mode"))
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
 
-lazy val `sbt-shuwari-header` =
+val `sbt-shuwari-header` =
   project
     .in(modules("header"))
     .dependsOn(`sbt-shuwari-core`)
@@ -42,7 +40,7 @@ lazy val `sbt-shuwari-header` =
     .settings(addSbtPlugin("com.github.sbt" % "sbt-header" % "5.11.0"))
     .settings(publishSettings)
 
-lazy val `sbt-shuwari-scalac` =
+val `sbt-shuwari-scalac` =
   project
     .in(modules("scalac"))
     .enablePlugins(SbtPlugin)
@@ -51,37 +49,22 @@ lazy val `sbt-shuwari-scalac` =
     .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.8")
     .settings(publishSettings)
 
-lazy val `sbt-shuwari-version` =
-  project
-    .in(modules("version"))
-    .enablePlugins(SbtPlugin)
-    .settings(publishSettings)
-    .settings(addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.1"))
-
-lazy val `sbt-shuwari` =
+val `sbt-shuwari` =
   project
     .in(file(".sbt-shuwari"))
-    .dependsOn(`sbt-shuwari-core`, `sbt-shuwari-scalac`, `sbt-shuwari-header`, `sbt-shuwari-version`)
+    .dependsOn(`sbt-shuwari-core`, `sbt-shuwari-scalac`, `sbt-shuwari-header`)
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
 
-// lazy val `sbt-shuwari-js` =
+// val `sbt-shuwari-js` =
 //   project
 //     .in(modules("js"))
 //     .enablePlugins(SbtPlugin)
 // //    .settings(publishSettings)
 //     .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
-//     .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.20.1"))
+//     .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.20.2"))
 
-// lazy val `sbt-shuwari-cross` =
-//   project
-//     .in(modules("cross"))
-//     .enablePlugins(SbtPlugin)
-//     .dependsOn(`sbt-shuwari`)
-// //    .settings(publishSettings)
-//     .settings(addSbtPlugin("org.portable-scala" % "sbt-crossproject" % "1.3.2"))
-
-lazy val `sbt-shuwari-documentation` =
+val `sbt-shuwari-documentation` =
   project
     .in(file(".sbt-shuwari-doc"))
     .dependsOn(`sbt-shuwari`)
@@ -94,7 +77,7 @@ lazy val `sbt-shuwari-documentation` =
       )
     )
 
-lazy val `sbt-shuwari-build-root` =
+val `sbt-shuwari-build-root` =
   project
     .in(file("."))
     .enablePlugins(SbtPlugin)
@@ -104,27 +87,28 @@ lazy val `sbt-shuwari-build-root` =
       `sbt-shuwari-header`,
       `sbt-shuwari-scalac`,
       `sbt-shuwari-core`,
-      `sbt-shuwari-version`,
-      `sbt-shuwari`
-      // `sbt-shuwari-cross`,
+      `sbt-shuwari`,
       // `sbt-shuwari-js`,
     )
 
 def modules(name: String) = file(s"./modules/$name")
 
 def publishSettings = pgpSettings ++: List(
-  packageOptions += Package.ManifestAttributes(
-    "Created-By" -> "Simple Build Tool",
-    "Built-By" -> System.getProperty("user.name"),
-    "Build-Jdk" -> System.getProperty("java.version"),
-    "Specification-Title" -> name.value,
-    "Specification-Version" -> version.value,
-    "Specification-Vendor" -> organizationName.value,
-    "Implementation-Title" -> name.value,
-    "Implementation-Version" -> implementationVersionSetting.value,
-    "Implementation-Vendor-Id" -> organization.value,
-    "Implementation-Vendor" -> organizationName.value
-  ),
+  packageOptions += {
+    val v = Version.Show.Extended.show(resolvedVersion.value)
+    Package.ManifestAttributes(
+      "Created-By" -> "Simple Build Tool",
+      "Built-By" -> System.getProperty("user.name"),
+      "Build-Jdk" -> System.getProperty("java.version"),
+      "Specification-Title" -> name.value,
+      "Specification-Version" -> version.value,
+      "Specification-Vendor" -> organizationName.value,
+      "Implementation-Title" -> name.value,
+      "Implementation-Version" -> Version.Show.Extended.show(resolvedVersion.value),
+      "Implementation-Vendor-Id" -> organization.value,
+      "Implementation-Vendor" -> organizationName.value
+    )
+  },
   publishTo := {
     val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
     if (version.value.toLowerCase.contains("snapshot")) Some("central-snapshots".at(centralSnapshots))
@@ -142,37 +126,10 @@ def publishSettings = pgpSettings ++: List(
   publishMavenStyle := true
 )
 
-def pgpSettings = List(
+def pgpSettings: List[Def.Setting[?]] = List(
   PgpKeys.pgpSelectPassphrase :=
     sys.props
       .get("SIGNING_KEY_PASSPHRASE")
       .map(_.toCharArray),
   usePgpKeyHex(System.getenv("SIGNING_KEY_ID"))
 )
-
-def baseVersionSetting(appendMetadata: Boolean): Def.Initialize[String] = {
-  def baseVersionFormatter(in: sbtdynver.GitDescribeOutput) = {
-    def meta =
-      if (appendMetadata) s"+${in.commitSuffix.distance}.${in.commitSuffix.sha}"
-      else ""
-
-    if (!in.isSnapshot()) in.ref.dropPrefix
-    else {
-      val parts = {
-        def current = in.ref.dropPrefix.split("\\.").map(_.toInt)
-        current.updated(current.length - 1, current.last + 1)
-      }
-      s"${parts.mkString(".")}-SNAPSHOT$meta"
-    }
-  }
-  Def.setting(
-    dynverGitDescribeOutput.value.mkVersion(
-      baseVersionFormatter,
-      "SNAPHOT"
-    )
-  )
-}
-
-def versionSetting = baseVersionSetting(appendMetadata = false)
-
-def implementationVersionSetting = baseVersionSetting(appendMetadata = true)

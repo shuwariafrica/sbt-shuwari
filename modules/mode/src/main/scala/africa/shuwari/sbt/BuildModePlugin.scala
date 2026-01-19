@@ -1,7 +1,7 @@
 package africa.shuwari.sbt
 
 import sbt.Def
-import sbt.*
+import sbt._
 import sbt.plugins.JvmPlugin
 
 object BuildModePlugin extends AutoPlugin:

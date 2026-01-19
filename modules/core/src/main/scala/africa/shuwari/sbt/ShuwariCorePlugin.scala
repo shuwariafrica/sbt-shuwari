@@ -1,6 +1,6 @@
 package africa.shuwari.sbt
 
-import sbt.*
+import sbt._
 import sbt.plugins.JvmPlugin
 
 object ShuwariCorePlugin extends AutoPlugin:

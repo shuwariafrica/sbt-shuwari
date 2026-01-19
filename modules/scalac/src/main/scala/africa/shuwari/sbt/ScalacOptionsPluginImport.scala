@@ -2,7 +2,7 @@ package africa.shuwari.sbt
 
 import scala.collection.immutable.ListSet
 
-import sbt.*
+import sbt._
 
 object ScalacOptionsPluginImport:
 

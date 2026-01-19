@@ -1,6 +1,6 @@
 package africa.shuwari.sbt
 
-import sbt.Keys.*
+import sbt.Keys._
 import sbt.Project
 import sbt.librarymanagement.License
 import sbt.settingKey

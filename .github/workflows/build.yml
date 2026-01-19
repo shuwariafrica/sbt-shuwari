@@ -3,10 +3,10 @@ name: "CI Build"
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches: [ main ]
   push:
-    branches: [main]
-    tags: [v*]
+    branches: [ main ]
+    tags: [ v* ]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -22,8 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [17, 25]
-    runs-on: ubuntu-22.04
+        java: [ 17, 25 ]
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Source Code
@@ -51,9 +51,9 @@ jobs:
 
   publish:
     name: Publish Release
-    needs: [test]
+    needs: [ test ]
     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Source Code
@@ -90,9 +90,9 @@ jobs:
 
   publish-documentation:
     name: Publish Documentation
-    needs: [publish]
+    needs: [ publish ]
     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v5
@@ -138,7 +138,7 @@ jobs:
   synchronise-repositories:
     name: Synchronise Repositories
     if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v5

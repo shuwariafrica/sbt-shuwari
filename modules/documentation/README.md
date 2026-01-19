@@ -1,104 +1,71 @@
 # sbt-shuwari
 
-A collection of [sbt](https://scala-sbt.org) plugins designed to provide unified configuration and extended build
-functionality for Shuwari Africa Ltd. projects. It also includes CI/CD and release-related optimisations.
+A collection of [sbt](https://scala-sbt.org) plugins providing unified build configuration for Scala projects.
 
-While optimised for internal use, these plugins can be used for other projects where their configurations are relevant.
-Report any issues via the [issue tracker](https://dev.azure.com/shuwari/sbt-shuwari/_workitems/create/issue).
-
-[![Maven Central](https://img.shields.io/maven-central/v/africa.shuwari.sbt/sbt-shuwari_2.12_1.0.svg)](https://maven-badges.herokuapp.com/maven-central/africa.shuwari.sbt/sbt-shuwari_2.12_1.0)
-[![Build Status](https://github.com/unganisha/sbt-shuwari/actions/workflows/build.yml/badge.svg)](https://github.com/unganisha/sbt-shuwari/actions/workflows/build.yml)
-[![Board Status](https://dev.azure.com/shuwari/79d8b623-e785-4397-8c14-0a0b3645f461/eaa58a91-e40a-46a5-b8f7-cfa30dbece27/_apis/work/boardbadge/bc91e17a-5d52-4d3a-aec3-e9a2678b1a10?columnOptions=1)](https://dev.azure.com/shuwari/79d8b623-e785-4397-8c14-0a0b3645f461/_boards/board/t/eaa58a91-e40a-46a5-b8f7-cfa30dbece27/Microsoft.RequirementCategory/)
+[![Build Status](https://github.com/shuwariafrica/sbt-shuwari/actions/workflows/build.yml/badge.svg)](https://github.com/shuwariafrica/sbt-shuwari/actions/workflows/build.yml)
 
 ---
 
-## Table of Contents
+## Setup
 
-1. [Introduction](#introduction)
-2. [Usage](#usage)
-3. [Core Plugins](#core-plugins)
-    - ShuwariCorePlugin
-    - ShuwariHeaderPlugin
-    - BuildModePlugin
-    - ScalacOptionsPlugin
-4. [Supplementary Plugins](#supplementary-plugins)
-    - ShuwariJsPlugin
-5. [Licence](#licence)
-
----
-
-## Introduction
-
-`sbt-shuwari` is a suite of sbt plugins tailored to Shuwari Africa Ltd. projects. It offers:
-
-- Centralised default settings for organising sbt builds.
-- Advanced integration to manage build environments (Development, Integration, Release).
-- Plugins for adding standardised headers to source files.
-- Default configurations for scalac and Scala.js.
-
----
-
-## Usage
-
-To include all core plugins in your build, add the following to `plugins.sbt`:
+Add to `project/plugins.sbt`:
 
 ```scala
 addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari" % "@VERSION@")
 ```
 
-Individual plugins can also be added selectively by specifying their dependencies. See the specific plugin details
-below.
+This includes all core plugins. Individual plugins may be added separately if preferred.
 
 ---
 
-## Core Plugins
+## Plugins
 
-All core plugins are **AutoPlugins**, meaning they are enabled automatically if their dependencies are met.
+All plugins are `AutoPlugin` implementations that trigger automatically when their requirements are satisfied.
 
-<details>
-<summary>ShuwariCorePlugin</summary>
+### ShuwariCorePlugin
 
 ```scala
 addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-core" % "@VERSION@")
 ```
 
-### Features:
+**Requires:** `JvmPlugin`
 
-- Automatically sets common settings such as `organizationName`, `organizationHomepage`, and `versionScheme`.
-- Includes developer information and other organisational settings for standardisation.
-- Ensures projects can be omitted from publishing if required.
+Provides project configuration utilities via extension methods on `Project`.
 
-### Available Utilities & Settings
+#### Extension Methods
 
-- **`shuwariProject`**:
-    - Adds organisational defaults like `organizationName`, `organizationHomepage`, and `developers`.
-    - Default settings:
-      ```scala
-      organizationName := "Shuwari Africa Ltd."
-      organizationHomepage := Some(url("https://shuwari.africa"))
-      versionScheme := Some("semver-spec")
-      developers := List(
-        Developer(
-          "shuwari-dev",
-          "Shuwari Africa Ltd. Developer Team",
-          "developers at shuwari dot africa",
-          url("https://shuwari.africa")
-        )
-      )
-      ```
-- **`notPublished`**:
-    - Configures the project to skip all publishing tasks.
-    - Default settings:
-      ```scala
-      publish / skip := true
-      publish := {}
-      publishLocal := {}
-      publishArtifact := false
-      ```
-- **`dependsOn`**:
-    - Simplified utility to depend on external libraries.
+| Method                                            | Description                                                                                               |
+|---------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| `shuwariProject`                                  | Applies organisation defaults (`organizationName`, `organizationHomepage`, `developers`, `versionScheme`) |
+| `notPublished`                                    | Disables all publishing tasks                                                                             |
+| `dependsOn(libraries: Def.Initialize[ModuleID]*)` | Adds library dependencies from settings                                                                   |
 
-Example usage:
+#### Settings Applied by `shuwariProject`
+
+```scala
+organizationName := "Shuwari Africa Ltd."
+organizationHomepage := Some(url("https://shuwari.africa"))
+developers := List(
+  Developer(
+    "shuwari-dev",
+    "Shuwari Africa Ltd. Developer Team",
+    "https://github.com/shuwariafrica",
+    url("https://shuwari.africa/dev")
+  )
+)
+versionScheme := Some("semver-spec")
+```
+
+#### Settings Applied by `notPublished`
+
+```scala
+publish / skip := true
+publish := {}
+publishLocal := {}
+publishArtifact := false
+```
+
+#### Example
 
 ```scala
 lazy val myProject = project
@@ -106,155 +73,200 @@ lazy val myProject = project
   .notPublished
 ```
 
-</details>
-
 ---
 
-<details>
-<summary>ShuwariHeaderPlugin</summary>
-
-```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-header" % "@VERSION@")
-```
-
-### Features:
-
-- Automatically detects the licensing model used in your project.
-- Supports custom, Apache 2.0, or GPLv3-style licence headers.
-- Includes configurable copyright holders.
-
-### Available Configuration Keys
-
-- **`headerCopyrightHolder`**:
-    - Defines the entity owning the copyright.
-    - Default: `None`.
-
-- **`headerLicense`**:
-    - The licence header included in source files.
-    - Default: Automatically detects from the project configuration.
-        - Defaults to an **internal licence** if no licence is specified.
-        - Can be explicitly set to Apache 2.0 or GPLv3 headers.
-
-Example:
-
-```scala
-lazy val project = (project in file("."))
-  .settings(apacheLicensed)
-```
-
-</details>
-
----
-
-<details>
-<summary>BuildModePlugin</summary>
+### BuildModePlugin
 
 ```scala
 addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-mode" % "@VERSION@")
 ```
 
-### Features:
+**Requires:** `JvmPlugin`
 
-- Dynamically resolves the `buildMode` from the `BUILD_MODE` environment variable.
-- Configures different behaviours for development, integration, and release builds.
+Provides build mode detection for environment-aware compilation and configuration.
 
-### Available Configuration Keys
+#### Setting Keys
 
-- **`buildMode`**:
-    - Configures the current build mode.
-    - Default: Automatically detects from `BUILD_MODE`, defaults to `Development`.
-      Valid values:
-        - `"DEVELOPMENT"` → `Mode.Development`.
-        - `"INTEGRATION"` → `Mode.Integration`.
-        - `"RELEASE"` → `Mode.Release`.
+| Key         | Type      | Description                                                         |
+|-------------|-----------|---------------------------------------------------------------------|
+| `buildMode` | `Mode`    | Current build mode. Resolved from `BUILD_MODE` environment variable |
+| `ci`        | `Boolean` | Whether the build is running in a CI environment                    |
 
-Example:
+#### Build Modes
+
+The `Mode` sealed trait provides three values:
+
+- `Mode.Development` — Local development (default)
+- `Mode.Integration` — CI/integration builds
+- `Mode.Release` — Production releases
+
+#### Resolution Logic
+
+1. Reads `BUILD_MODE` environment variable (case-insensitive: `development`, `integration`, `release`)
+2. Defaults to `Mode.Development` if unset
+3. Automatically promotes `Development` to `Integration` when CI is detected
+
+#### CI Detection
+
+The `ci` setting returns `true` when any of the following environment variables are present:
+
+- `CI`
+- `GITHUB_ACTIONS`
+- `TF_BUILD` (Azure Pipelines)
+- `BITBUCKET_BUILD_NUMBER`
+- `TEAMCITY_VERSION`
+
+#### Example
 
 ```scala
-ThisBuild / buildMode := Mode.Release
+Compile / compile := {
+  if (buildMode.value === Mode.Release) {
+    // Release-specific logic
+  }
+  (Compile / compile).value
+}
 ```
-
-</details>
 
 ---
 
-<details>
-<summary>ScalacOptionsPlugin</summary>
+### ShuwariHeaderPlugin
+
+```scala
+addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-header" % "@VERSION@")
+```
+
+**Requires:** `ShuwariCorePlugin`, `HeaderPlugin` (sbt-header)
+
+Automatically configures source file licence headers based on the project's `licenses` setting.
+
+#### Setting Keys
+
+| Key                     | Type             | Description                                           |
+|-------------------------|------------------|-------------------------------------------------------|
+| `headerCopyrightHolder` | `Option[String]` | Copyright holder name. Defaults to `organizationName` |
+
+#### Licence Detection
+
+The plugin inspects the `licenses` setting and applies the appropriate header:
+
+| Detected Licence | Header Applied                         |
+|------------------|----------------------------------------|
+| Apache-2.0       | Apache License 2.0 header              |
+| GPL-3.0 / GPLv3  | GNU GPL v3 header                      |
+| MIT              | MIT licence header                     |
+| Empty/None       | Internal software header (proprietary) |
+
+#### Convenience Settings
+
+```scala
+apacheLicensed // Sets licenses := List(License.Apache2)
+mitLicensed // Sets licenses := List(License.MIT)
+gplLicensed // Sets licenses := List(License.GPL3_or_later)
+internalSoftware // Sets licenses := List.empty
+```
+
+#### Extension Methods
+
+| Method                | Description                           |
+|-----------------------|---------------------------------------|
+| `license(l: License)` | Sets the project licence              |
+| `internalSoftware`    | Marks project as internal/proprietary |
+
+#### Example
+
+```scala
+lazy val myProject = project
+  .settings(apacheLicensed)
+
+// Or using extension method
+lazy val internal = project
+  .internalSoftware
+```
+
+---
+
+### ScalacOptionsPlugin
 
 ```scala
 addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-scalac" % "@VERSION@")
 ```
 
-### Features:
+**Requires:** `BuildModePlugin`
 
-- Seamlessly integrates with **`BuildModePlugin`** and **`TpolecatPlugin`**, enabling dynamic assignment of scalac
-  options.
-- Adjusts configurations for stricter linting and compilation optimisations based on the active build mode.
-- **`tpolecatOptionsMode`**:
-    - Dynamically maps `TpolecatPlugin` modes to the current **build mode**, as provided by `sbt-shuwari-mode`. This
-      ensures tailored compiler flags for various scenarios:
-        - `VerboseMode` corresponds to `Mode.Development`, promoting detailed feedback for debugging.
-        - `CiMode` aligns with `Mode.Integration`, focusing on consistency and maintainability.
-        - `ReleaseMode` associates with `Mode.Release`, ensuring production-ready builds.
+Configures Scala 3 compiler options based on the active build mode. Built
+on [typelevel/scalac-options](https://github.com/typelevel/scalac-options).
 
-  > For more details, refer to the section on [sbt-shuwari-mode](#).
+#### Setting Keys
 
-### Available Configuration Keys:
+| Key               | Type                    | Description                                    |
+|-------------------|-------------------------|------------------------------------------------|
+| `compilerOptions` | `ListSet[ScalacOption]` | Active compiler options                        |
+| `basePackages`    | `Set[String]`           | Base package names for optimiser configuration |
 
-- **`basePackages`**:
-    - A list of base package names used to tune deeper optimisations across the project.
-    - Default: `List.empty`.
+#### Default Options
 
-- **`tpolecatDevModeOptions`**, **`tpolecatCiModeOptions`**, **`tpolecatReleaseModeOptions`**:
-    - These keys provide customisation points for scalac options unique to each build mode. Use them to override or
-      extend default configurations.
+The following options are enabled by default (when supported by the Scala version):
 
-</details>
+- `-explain` — Detailed error explanations
+- `-explain-types` — Detailed type mismatch explanations
+- `-Yrequire-targetName` — Require `@targetName` annotations
+- `-Yexplicit-nulls` — Distinguish `T` from `T | Null`
+- `-Ycheck-reentrant` — Check for reentrant macro expansions
+- `-language:strictEquality` — Require explicit `CanEqual` instances
+- `-new-syntax` — Require new Scala 3 syntax
+- `-Xmax-inlines:64` — Increased inline limit
+- Fatal warning options from scalac-options
 
----
+#### Mode-Specific Behaviour
 
-## Supplementary Plugins
+| Mode                      | Behaviour                                                              |
+|---------------------------|------------------------------------------------------------------------|
+| `Development`             | Default options                                                        |
+| `Integration` / `Release` | Default options + optimiser options (when `basePackages` is non-empty) |
 
-<details>
-<summary>ShuwariJsPlugin</summary>
+#### Test Scope
+
+The `Test` configuration automatically excludes:
+
+- `-Yexplicit-nulls`
+- `-language:strictEquality`
+
+#### Extension Methods on `ListSet[ScalacOption]`
+
+| Method                         | Description                                    |
+|--------------------------------|------------------------------------------------|
+| `scalac`                       | Converts to `List[String]` for `scalacOptions` |
+| `exclude(opts: ScalacOption*)` | Removes specified options                      |
+
+#### Additional Scala 3 Options
+
+The plugin defines additional options beyond the base scalac-options library:
+
+- `ScalacOptions.checkMods` — Check modifier consistency
+- `ScalacOptions.checkMacros` — Check macro implementations
+- `ScalacOptions.checkReentrant` — Check for reentrant macro expansions
+- `ScalacOptions.explicitNulls` — Enable explicit nulls
+- `ScalacOptions.requireTargetName` — Require `@targetName` for enums
+- `ScalacOptions.experimentalCaptureChecking` — Capture checking (experimental)
+- `ScalacOptions.experimentalErasedDefinitions` — Erased definitions (experimental)
+- `ScalacOptions.experimentalInto` — `into` modifier (experimental)
+- `ScalacOptions.experimentalPureFunctions` — Pure functions (experimental)
+- `ScalacOptions.experimentalSaferExceptions` — Safer exceptions (experimental)
+
+#### Example
 
 ```scala
-addSbtPlugin("africa.shuwari.sbt" % "sbt-shuwari-js" % "@VERSION@")
+// Add base packages for optimiser
+basePackages := Set("com.example.myapp")
+
+// Exclude specific options
+Compile / compilerOptions := compilerOptions.value.exclude(
+  ScalacOptions.explicitNulls
+)
 ```
-
-### Available Configuration Keys
-
-- **`scalaJSLinkerConfig`**:
-    - Configures the linker for Scala.js builds, automatically adjusting based on the current `buildMode`.
-
-#### Linker Configurations Employed
-
-- **Development Mode**:  
-  Configured for faster builds and easier debugging. Uses **ES modules** for compatibility with modern JavaScript
-  environments and applies the `FewestModules` strategy for minimal module splitting.
-
-- **Release/Integration Mode**:  
-  Optimised for production and integration builds. Uses the `SmallestModules` splitting strategy for reducing bundle
-  sizes and enables **Closure Compiler** for advanced optimisations.
-
-- **`tpolecatExcludeOptions`**:
-    - Excludes Scala.js-incompatible scalac options, such as:
-        - `explicitNulls`
-        - JVM-specific checks like `checkMods`.
-
-</details>
 
 ---
 
 ## Licence
 
-<pre>
-Copyright © Shuwari Africa Ltd. All rights reserved.
-
-Licensed under the Apache License, Version 2.0 (the "Licence"). You may obtain a copy at:
-<a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">http://www.apache.org/licenses/LICENSE-2.0</a>
-
-Unless required by applicable law or agreed to in writing, software distributed under the Licence
-is distributed on an"AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.
-See the Licence for details.
-</pre>
+Copyright © Shuwari Africa Ltd. All rights reserved. Licensed under the Apache License, Version 2.0.
