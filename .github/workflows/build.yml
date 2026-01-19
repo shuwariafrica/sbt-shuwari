@@ -82,7 +82,7 @@ jobs:
           trust_level: 5
 
       - name: Publish Projects
-        run: sbt publishSigned sonaUpload sonaRelease
+        run: sbt "publishSigned; sonaUpload; sonaRelease"
         env:
           SONATYPE_USERNAME: ${{ secrets.OSS_PUBLISH_USER }}
           SONATYPE_PASSWORD: ${{ secrets.OSS_PUBLISH_USER_PASSPHRASE }}
