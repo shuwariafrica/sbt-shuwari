@@ -1,27 +1,24 @@
 package africa.shuwari.sbt
 
 import sbt.Def
-import sbt.*
+import sbt._
 import sbt.plugins.JvmPlugin
 
-object BuildModePlugin extends AutoPlugin {
+object BuildModePlugin extends AutoPlugin:
 
-  sealed trait Mode extends Product with Serializable {
-    def ===(mode: Mode): Boolean = this == mode // scalafix:ok
+  sealed trait Mode extends Product with Serializable:
+    def ===(mode: Mode): Boolean = this == mode
     override def toString: String = this.getClass.getSimpleName.dropWhile(_ == '$').toLowerCase // scalafix:ok
-  }
-  object Mode {
+  object Mode:
     case object Development extends Mode
     case object Integration extends Mode
     case object Release extends Mode
-  }
 
-  object autoImport {
+  object autoImport:
     final val Mode = BuildModePlugin.Mode
     type Mode = BuildModePlugin.Mode
     final val ci = BuildModePlugin.ci
     final val buildMode = BuildModePlugin.buildMode
-  }
 
   override def trigger: PluginTrigger = allRequirements
   override def requires: Plugins = JvmPlugin
@@ -52,7 +49,5 @@ object BuildModePlugin extends AutoPlugin {
     val environmentSetting: String = "BUILD_MODE"
     val modes = Set(Mode.Development, Mode.Integration, Mode.Release).map(m => m.toString -> m).toMap
     val buildMode = sys.env.get(environmentSetting).flatMap(modes.get).getOrElse(Mode.Development)
-    if (ci && buildMode == Mode.Development) Mode.Integration else buildMode // scalafix:ok
+    if ci && buildMode == Mode.Development then Mode.Integration else buildMode // scalafix:ok
   }
-
-}

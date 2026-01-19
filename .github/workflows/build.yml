@@ -3,13 +3,18 @@ name: "CI Build"
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches: [ main ]
   push:
-    branches: [main]
-    tags: [v*]
+    branches: [ main ]
+    tags: [ v* ]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SBT_OPTS: >- # Use all available resources
+    -Xmx10G
+    -Xms6G
+    -Xss8M
+    -XX:ReservedCodeCacheSize=512M
 
 jobs:
   test:
@@ -17,8 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [8, 17]
-    runs-on: ubuntu-22.04
+        java: [ 17, 25 ]
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Source Code
@@ -32,17 +37,23 @@ jobs:
           distribution: "temurin"
           java-version: ${{ matrix.java }}
 
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Set up Coursier cache
+        uses: coursier/cache-action@v7
+
       - name: Execute Unit Tests
-        run: sbt test
+        run: sbt -v test
 
       - name: Package Project Products
-        run: sbt package
+        run: sbt -v package
 
   publish:
     name: Publish Release
-    needs: [test]
+    needs: [ test ]
     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Source Code
@@ -54,7 +65,13 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: 11
+          java-version: 17
+
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Set up Coursier cache
+        uses: coursier/cache-action@v7
 
       - name: Import Signing Key
         uses: crazy-max/ghaction-import-gpg@v6
@@ -62,23 +79,20 @@ jobs:
           gpg_private_key: ${{ secrets.OSS_PUBLISH_USER_SIGNING_KEY }}
           git_user_signingkey: true
           git_commit_gpgsign: true
-
-      - name: Update Signing Key Trust Level
-        run: echo -e "trust\n5\ny" | gpg --batch --no-tty --command-fd 0 --edit-key ${{ secrets.OSS_PUBLISH_USER_SIGNING_KEY_ID }}
+          trust_level: 5
 
       - name: Publish Projects
-        run: sbt publishSigned sonatypeBundleRelease
+        run: sbt publishSigned sonaUpload sonaRelease
         env:
-          PUBLISH_USER: ${{ secrets.OSS_PUBLISH_USER }}
-          PUBLISH_USER_PASSPHRASE: ${{ secrets.OSS_PUBLISH_USER_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.OSS_PUBLISH_USER }}
+          SONATYPE_PASSWORD: ${{ secrets.OSS_PUBLISH_USER_PASSPHRASE }}
           SIGNING_KEY_ID: ${{ secrets.OSS_PUBLISH_USER_SIGNING_KEY_ID }}
-
 
   publish-documentation:
     name: Publish Documentation
-    needs: [publish]
+    needs: [ publish ]
     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v5
@@ -92,6 +106,12 @@ jobs:
           distribution: "temurin"
           java-version: 17
 
+      - name: Set up sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Set up Coursier cache
+        uses: coursier/cache-action@v7
+
       - name: Import Signing Key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
@@ -99,9 +119,7 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
           git_committer_name: Shuwari Africa Team
-
-      - name: Update Signing Key Trust Level
-        run: echo -e "trust\n5\ny" | gpg --batch --no-tty --command-fd 0 --edit-key ${{ secrets.OSS_PUBLISH_USER_SIGNING_KEY_ID }}
+          trust_level: 5
 
       - name: Generate Documentation
         run: sbt sbt-shuwari-documentation/mdoc
@@ -117,11 +135,10 @@ jobs:
           github_token: ${{ secrets.OSS_TEAM_TOKEN }}
           branch: main
 
-
   synchronise-repositories:
     name: Synchronise Repositories
     if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v5

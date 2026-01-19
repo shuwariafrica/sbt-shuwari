@@ -1,30 +1,30 @@
 package africa.shuwari.sbt
 
 import sbt.Keys.scalaVersion
-import sbt.*
+import sbt._
 
-import africa.shuwari.sbt.BuildModePlugin.buildMode
-import africa.shuwari.sbt.ScalaCompilerOptions.*
-import africa.shuwari.sbt.ScalacKeys.basePackages
-import africa.shuwari.sbt.ScalacKeys.compilerOptions
+import africa.shuwari.sbt.ScalacOptionsPluginImport._
 
 /** Plugin to integrate build modes and compiler options into sbt projects. */
-object ScalacOptionsPlugin extends AutoPlugin {
+object ScalacOptionsPlugin extends AutoPlugin:
 
-  object autoImport {
-    final val ScalaCompiler = ScalacKeys
-    final val ScalacOption = org.typelevel.scalacoptions.ScalacOption
-    type ScalacOption = org.typelevel.scalacoptions.ScalacOption
-  }
+  val autoImport: ScalacOptionsPluginImport.type = ScalacOptionsPluginImport
 
   override def requires: Plugins = BuildModePlugin
   override def trigger: PluginTrigger = allRequirements
 
   override def projectSettings: Seq[Setting[?]] = Seq(
-    basePackages := Set.empty, // Initialize `basePackages` as empty by default,
-    compilerOptions := effectiveOptions(scalaVersion.value, buildMode.value, basePackages.value),
-    Test / compilerOptions := testOptions((Compile / compilerOptions).value),
-    Compile / Keys.compile / Keys.scalacOptions ++= optionsList(compilerOptions.value),
-    Test / Keys.compile / Keys.scalacOptions ++= optionsList((Test / compilerOptions).value)
+    basePackages := Set.empty,
+    compilerOptions :=
+      ScalacOptions.effectiveOptions(scalaVersion.value, BuildModePlugin.buildMode.value, basePackages.value),
+    Test / compilerOptions := (Compile / compilerOptions).value.exclude(ScalacOptions.explicitNulls,
+                                                                        ScalacOptions.languageStrictEquality),
+    Compile / Keys.compile / Keys.scalacOptions := Def.settingDyn {
+      val options = compilerOptions.value
+      Def.setting(options.scalac)
+    }.value,
+    Test / Keys.compile / Keys.scalacOptions := Def.settingDyn {
+      val options = (Test / compilerOptions).value
+      Def.setting(options.scalac)
+    }.value
   )
-}
