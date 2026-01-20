@@ -1,6 +1,6 @@
 addSbtPlugin("africa.shuwari" % "sbt-version" % "0.6.2")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.1")
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.8.0")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.8.2")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.6")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.4")
 
