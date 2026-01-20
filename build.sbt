@@ -87,7 +87,7 @@ val `sbt-shuwari-build-root` =
       `sbt-shuwari-header`,
       `sbt-shuwari-scalac`,
       `sbt-shuwari-core`,
-      `sbt-shuwari`,
+      `sbt-shuwari`
       // `sbt-shuwari-js`,
     )
 
