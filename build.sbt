@@ -1,6 +1,6 @@
 inThisBuild(
   List(
-    scalaVersion := "3.8.0",
+    scalaVersion := "3.8.1",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
     organizationHomepage := Some(url("https://shuwari.africa/dev")),
@@ -87,7 +87,7 @@ val `sbt-shuwari-build-root` =
       `sbt-shuwari-header`,
       `sbt-shuwari-scalac`,
       `sbt-shuwari-core`,
-      `sbt-shuwari`,
+      `sbt-shuwari`
       // `sbt-shuwari-js`,
     )
 
