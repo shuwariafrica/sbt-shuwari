@@ -3,19 +3,19 @@ package africa.shuwari.sbt
 import scala.language.implicitConversions
 
 import sbt.Def
-import sbt.Keys._
+import sbt.Keys.*
 import sbt.URL
-import sbt._
+import sbt.*
 import sbtheader.CommentCreator
 import sbtheader.CommentStyle
 import sbtheader.FileType
 import sbtheader.HeaderPlugin
 import sbtheader.HeaderPlugin.autoImport.HeaderPattern
-import sbtheader.HeaderPlugin.autoImport._
+import sbtheader.HeaderPlugin.autoImport.*
 import sbtheader.License
 import sbtheader.LicenseDetection
 
-import africa.shuwari.sbt.ShuwariHeaderImports._
+import africa.shuwari.sbt.ShuwariHeaderImports.*
 
 object ShuwariHeaderPlugin extends AutoPlugin:
   val autoImport = ShuwariHeaderImports
