@@ -1,6 +1,6 @@
 inThisBuild(
   List(
-    scalaVersion := "3.8.0",
+    scalaVersion := "3.8.3",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
     organizationHomepage := Some(url("https://shuwari.africa/dev")),
@@ -46,7 +46,7 @@ val `sbt-shuwari-scalac` =
     .enablePlugins(SbtPlugin)
     .dependsOn(`sbt-shuwari-core`)
     .dependsOn(`sbt-shuwari-mode`)
-    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.8")
+    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.9")
     .settings(publishSettings)
 
 val `sbt-shuwari` =
@@ -87,7 +87,7 @@ val `sbt-shuwari-build-root` =
       `sbt-shuwari-header`,
       `sbt-shuwari-scalac`,
       `sbt-shuwari-core`,
-      `sbt-shuwari`,
+      `sbt-shuwari`
       // `sbt-shuwari-js`,
     )
 
