@@ -1,13 +1,13 @@
 package africa.shuwari.sbt
 
 import sbt.Def
-import sbt._
+import sbt.*
 import sbt.plugins.JvmPlugin
 
 object BuildModePlugin extends AutoPlugin:
 
   sealed trait Mode extends Product with Serializable:
-    def ===(mode: Mode): Boolean = this == mode
+    def ===(mode: Mode): Boolean = this == mode // scalafix:ok
     override def toString: String = this.getClass.getSimpleName.dropWhile(_ == '$').toLowerCase // scalafix:ok
   object Mode:
     case object Development extends Mode

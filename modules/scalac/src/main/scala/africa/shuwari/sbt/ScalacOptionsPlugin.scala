@@ -1,9 +1,9 @@
 package africa.shuwari.sbt
 
 import sbt.Keys.scalaVersion
-import sbt._
+import sbt.*
 
-import africa.shuwari.sbt.ScalacOptionsPluginImport._
+import africa.shuwari.sbt.ScalacOptionsPluginImport.*
 
 /** Plugin to integrate build modes and compiler options into sbt projects. */
 object ScalacOptionsPlugin extends AutoPlugin:
@@ -17,13 +17,13 @@ object ScalacOptionsPlugin extends AutoPlugin:
     basePackages := Set.empty,
     compilerOptions :=
       ScalacOptions.effectiveOptions(scalaVersion.value, BuildModePlugin.buildMode.value, basePackages.value),
-    Test / compilerOptions := (Compile / compilerOptions).value.exclude(ScalacOptions.explicitNulls,
+    Test / compilerOptions := (Compile / compilerOptions).value.exclude(ScalacOptions.privateExplicitNulls,
                                                                         ScalacOptions.languageStrictEquality),
-    Compile / Keys.compile / Keys.scalacOptions := Def.settingDyn {
+    Compile / Keys.compile / Keys.scalacOptions ++= Def.settingDyn {
       val options = compilerOptions.value
       Def.setting(options.scalac)
     }.value,
-    Test / Keys.compile / Keys.scalacOptions := Def.settingDyn {
+    Test / Keys.compile / Keys.scalacOptions ++= Def.settingDyn {
       val options = (Test / compilerOptions).value
       Def.setting(options.scalac)
     }.value

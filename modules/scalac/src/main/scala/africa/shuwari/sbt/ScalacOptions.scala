@@ -31,9 +31,6 @@ object ScalacOptions extends ScalacOptionsDefinition:
 
   val experimentalSaferExceptions: ScalacOption = languageFeatureOption("experimental.saferExceptions", atLeast37)
 
-  /** Enable safer handling of nulls by distinguishing between `T` and `T | Null`. */
-  val explicitNulls: ScalacOption = privateOption("explicit-nulls", _.isAtLeast(ScalaVersion.V3_3_1))
-
   /** Require `@targetName` for enums in Scala 3. */
   val requireTargetName: ScalacOption = privateOption("require-targetName", _.isAtLeast(ScalaVersion.V3_3_1))
 
@@ -45,7 +42,7 @@ object ScalacOptions extends ScalacOptionsDefinition:
     explainTypes,
     checkReentrant,
     newSyntax,
-    explicitNulls,
+    privateExplicitNulls,
     requireTargetName,
     maxInlines,
     languageStrictEquality
