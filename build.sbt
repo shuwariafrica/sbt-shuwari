@@ -81,6 +81,7 @@ val `sbt-shuwari-build-root` =
   project
     .in(file("."))
     .enablePlugins(SbtPlugin)
+    .enablePlugins(GitVersioning)
     .settings(publish / skip := true)
     .aggregate(
       `sbt-shuwari-mode`,
@@ -95,7 +96,6 @@ def modules(name: String) = file(s"./modules/$name")
 
 def publishSettings = pgpSettings ++: List(
   packageOptions += {
-    val v = Version.Show.Extended.show(resolvedVersion.value)
     Package.ManifestAttributes(
       "Created-By" -> "Simple Build Tool",
       "Built-By" -> System.getProperty("user.name"),
@@ -104,7 +104,6 @@ def publishSettings = pgpSettings ++: List(
       "Specification-Version" -> version.value,
       "Specification-Vendor" -> organizationName.value,
       "Implementation-Title" -> name.value,
-      "Implementation-Version" -> Version.Show.Extended.show(resolvedVersion.value),
       "Implementation-Vendor-Id" -> organization.value,
       "Implementation-Vendor" -> organizationName.value
     )
