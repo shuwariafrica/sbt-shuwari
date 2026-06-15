@@ -1,6 +1,6 @@
 inThisBuild(
   List(
-    scalaVersion := "3.8.3",
+    scalaVersion := "3.8.4",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
     organizationHomepage := Some(url("https://shuwari.africa/dev")),
@@ -95,7 +95,7 @@ val `sbt-shuwari-build-root` =
 def modules(name: String) = file(s"./modules/$name")
 
 def publishSettings = pgpSettings ++: List(
-  packageOptions += {
+  packageOptions +=
     Package.ManifestAttributes(
       "Created-By" -> "Simple Build Tool",
       "Built-By" -> System.getProperty("user.name"),
@@ -106,8 +106,7 @@ def publishSettings = pgpSettings ++: List(
       "Implementation-Title" -> name.value,
       "Implementation-Vendor-Id" -> organization.value,
       "Implementation-Vendor" -> organizationName.value
-    )
-  },
+    ),
   publishTo := {
     val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
     if (version.value.toLowerCase.contains("snapshot")) Some("central-snapshots".at(centralSnapshots))
