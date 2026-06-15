@@ -46,7 +46,7 @@ val `sbt-shuwari-scalac` =
     .enablePlugins(SbtPlugin)
     .dependsOn(`sbt-shuwari-core`)
     .dependsOn(`sbt-shuwari-mode`)
-    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.9")
+    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.11")
     .settings(publishSettings)
 
 val `sbt-shuwari` =
@@ -95,7 +95,7 @@ val `sbt-shuwari-build-root` =
 def modules(name: String) = file(s"./modules/$name")
 
 def publishSettings = pgpSettings ++: List(
-  packageOptions += {
+  packageOptions +=
     Package.ManifestAttributes(
       "Created-By" -> "Simple Build Tool",
       "Built-By" -> System.getProperty("user.name"),
@@ -106,8 +106,7 @@ def publishSettings = pgpSettings ++: List(
       "Implementation-Title" -> name.value,
       "Implementation-Vendor-Id" -> organization.value,
       "Implementation-Vendor" -> organizationName.value
-    )
-  },
+    ),
   publishTo := {
     val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
     if (version.value.toLowerCase.contains("snapshot")) Some("central-snapshots".at(centralSnapshots))
