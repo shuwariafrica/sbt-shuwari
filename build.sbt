@@ -46,7 +46,7 @@ val `sbt-shuwari-scalac` =
     .enablePlugins(SbtPlugin)
     .dependsOn(`sbt-shuwari-core`)
     .dependsOn(`sbt-shuwari-mode`)
-    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.9")
+    .settings(libraryDependencies += "org.typelevel" %% "scalac-options" % "0.1.11")
     .settings(publishSettings)
 
 val `sbt-shuwari` =
