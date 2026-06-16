@@ -9,13 +9,13 @@ import sbt.*
 
 import africa.shuwari.sbt.ScalacKeys.compilerOptions
 
-object JSPlugin extends AutoPlugin {
+object JSPlugin extends AutoPlugin:
 
   override def requires: Plugins = ScalaJSPlugin && ScalacOptionsPlugin
 
   override def trigger: PluginTrigger = allRequirements
 
-  override def projectSettings: Seq[Def.Setting[?]] = {
+  override def projectSettings: Seq[Def.Setting[?]] =
     import ScalaJSPlugin.autoImport.*
 
     Seq(
@@ -23,20 +23,18 @@ object JSPlugin extends AutoPlugin {
       compilerOptions := compilerOptions.value.diff(excludeJSIncompatibleOptions),
       (Test / compilerOptions) := (Test / compilerOptions).value.diff(excludeJSIncompatibleOptions)
     )
-  }
 
   /** Default Scala.js linker configuration */
   def defaultLinkerConfigOptions: Def.Initialize[StandardConfig] = Def.setting {
     val basePackages = ScalacKeys.basePackages.value
 
-    val splitStyle = BuildModePlugin.buildMode.value match {
+    val splitStyle = BuildModePlugin.buildMode.value match
       case BuildModePlugin.Mode.Development =>
-        if (basePackages.nonEmpty) ModuleSplitStyle.SmallModulesFor(basePackages.toList)
+        if basePackages.nonEmpty then ModuleSplitStyle.SmallModulesFor(basePackages.toList)
         else ModuleSplitStyle.FewestModules
       case _ =>
-        if (basePackages.nonEmpty) ModuleSplitStyle.SmallModulesFor(basePackages.toList)
+        if basePackages.nonEmpty then ModuleSplitStyle.SmallModulesFor(basePackages.toList)
         else ModuleSplitStyle.SmallestModules
-    }
 
     val baseConfig = StandardConfig()
       .withModuleKind(ModuleKind.ESModule) // Use ES Modules
@@ -56,7 +54,7 @@ object JSPlugin extends AutoPlugin {
 
   /** Optimization level based on build mode */
   private def adjustedLinkerConfig(buildMode: BuildModePlugin.Mode, config: StandardConfig): StandardConfig =
-    buildMode match {
+    buildMode match
       case BuildModePlugin.Mode.Development =>
         config
           .withClosureCompiler(false) // No advanced optimizations in development mode
@@ -66,6 +64,3 @@ object JSPlugin extends AutoPlugin {
         config
           .withClosureCompiler(true) // Enable Closure Compiler for full optimization
           .withBatchMode(true) // Best performance for full builds
-    }
-
-}
