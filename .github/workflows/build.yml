@@ -13,21 +13,22 @@ env:
   SBT_OPTS: >- # Use all available resources
     -Xmx10G
     -Xms6G
-    -Xss8M
+    -Xss4M
     -XX:ReservedCodeCacheSize=512M
 
 jobs:
   test:
     name: Execute Tests (Java ${{ matrix.java }})
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        java: [ 17, 25 ]
+        java: [ 17 ]
     runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -41,16 +42,17 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Set up Coursier cache
-        uses: coursier/cache-action@v7
+        uses: coursier/cache-action@v8
 
       - name: Execute Unit Tests
-        run: sbt -v test
+        run: sbt test
 
       - name: Package Project Products
-        run: sbt -v package
+        run: sbt package
 
   publish:
     name: Publish Release
+    timeout-minutes: 90
     needs: [ test ]
     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
@@ -90,6 +92,7 @@ jobs:
 
   publish-documentation:
     name: Publish Documentation
+    timeout-minutes: 30
     needs: [ publish ]
     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
@@ -137,6 +140,7 @@ jobs:
 
   synchronise-repositories:
     name: Synchronise Repositories
+    timeout-minutes: 30
     if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-24.04
     steps:
