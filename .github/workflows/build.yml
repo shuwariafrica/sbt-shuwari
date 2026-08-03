@@ -39,7 +39,7 @@ jobs:
           java-version: ${{ matrix.java }}
 
       - name: Set up sbt
-        uses: sbt/setup-sbt@v1.5.5
+        uses: sbt/setup-sbt@v1.5.6
 
       - name: Set up Coursier cache
         uses: coursier/cache-action@v8
@@ -70,7 +70,7 @@ jobs:
           java-version: 17
 
       - name: Set up sbt
-        uses: sbt/setup-sbt@v1.5.5
+        uses: sbt/setup-sbt@v1.5.6
 
       - name: Set up Coursier cache
         uses: coursier/cache-action@v8
@@ -110,7 +110,7 @@ jobs:
           java-version: 17
 
       - name: Set up sbt
-        uses: sbt/setup-sbt@v1.5.5
+        uses: sbt/setup-sbt@v1.5.6
 
       - name: Set up Coursier cache
         uses: coursier/cache-action@v8
