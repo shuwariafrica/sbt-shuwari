@@ -1,6 +1,6 @@
 inThisBuild(
   List(
-    scalaVersion := "3.8.4",
+    scalaVersion := "3.9.0",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
     organizationHomepage := Some(url("https://shuwari.africa/dev")),
