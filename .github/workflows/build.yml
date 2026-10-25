@@ -115,27 +115,22 @@ jobs:
       - name: Set up Coursier cache
         uses: coursier/cache-action@v8
 
-      - name: Import Signing Key
-        uses: crazy-max/ghaction-import-gpg@v7
-        with:
-          gpg_private_key: ${{ secrets.OSS_PUBLISH_USER_SIGNING_KEY }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-          git_committer_name: Shuwari Africa Team
-          trust_level: 5
-
       - name: Generate Documentation
         run: sbt sbt-shuwari-documentation/mdoc
 
-      - name: Commit Documentation Changes
-        run: |
-          git add ./README.md && \
-          git commit --gpg-sign --message "Update documentation for ${{ github.ref_name }}"
-
-      - name: Push Documentation Changes
-        uses: ad-m/github-push-action@master
+      - name: Mint Release Bot Token
+        id: release-bot
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
-          github_token: ${{ secrets.OSS_TEAM_TOKEN }}
+          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
+      - name: Update README on main
+        uses: shuwariafrica/.github/actions/api-commit@59c535a9e1eb39fce9bc3e7b8dbcc3a10147b5a1
+        with:
+          token: ${{ steps.release-bot.outputs.token }}
+          paths: README.md
+          message: Update documentation for ${{ github.ref_name }}
           branch: main
 
   synchronise-repositories:
