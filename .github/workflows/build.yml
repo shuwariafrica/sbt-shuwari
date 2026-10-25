@@ -132,22 +132,3 @@ jobs:
           paths: README.md
           message: Update documentation for ${{ github.ref_name }}
           branch: main
-
-  synchronise-repositories:
-    name: Synchronise Repositories
-    timeout-minutes: 30
-    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Synchronise Azure DevOps
-        uses: yesolutions/mirror-action@v0.7.0
-        with:
-          REMOTE: "git@ssh.dev.azure.com:v3/shuwari/sbt-shuwari/sbt-shuwari"
-          GIT_SSH_PRIVATE_KEY: ${{ secrets.DEVOPS_SSH_PRIVATE_KEY }}
-          GIT_SSH_NO_VERIFY_HOST: "true"
-          PUSH_ALL_REFS: false

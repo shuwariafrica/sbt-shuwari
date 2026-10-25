@@ -4,11 +4,10 @@ A collection of [sbt](https://scala-sbt.org) plugins designed to provide unified
 functionality for Shuwari Africa Ltd. projects. It also includes CI/CD and release-related optimisations.
 
 While optimised for internal use, these plugins can be used for other projects where their configurations are relevant.
-Report any issues via the [issue tracker](https://dev.azure.com/shuwari/sbt-shuwari/_workitems/create/issue).
+Report any issues via the [issue tracker](https://github.com/shuwariafrica/sbt-shuwari/issues).
 
 [![Maven Central](https://img.shields.io/maven-central/v/africa.shuwari.sbt/sbt-shuwari_2.12_1.0.svg)](https://maven-badges.herokuapp.com/maven-central/africa.shuwari.sbt/sbt-shuwari_2.12_1.0)
 [![Build Status](https://github.com/unganisha/sbt-shuwari/actions/workflows/build.yml/badge.svg)](https://github.com/unganisha/sbt-shuwari/actions/workflows/build.yml)
-[![Board Status](https://dev.azure.com/shuwari/79d8b623-e785-4397-8c14-0a0b3645f461/eaa58a91-e40a-46a5-b8f7-cfa30dbece27/_apis/work/boardbadge/bc91e17a-5d52-4d3a-aec3-e9a2678b1a10?columnOptions=1)](https://dev.azure.com/shuwari/79d8b623-e785-4397-8c14-0a0b3645f461/_boards/board/t/eaa58a91-e40a-46a5-b8f7-cfa30dbece27/Microsoft.RequirementCategory/)
 
 ---
 
