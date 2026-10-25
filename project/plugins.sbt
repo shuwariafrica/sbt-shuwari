@@ -2,6 +2,6 @@ addSbtPlugin("com.github.sbt" % "sbt-git" % "2.1.0")
 addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.3.2")
 addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.9.2")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.7")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.9")
 
 excludeDependencies += "org.scala-lang.modules" % "scala-collection-compat_2.13" // TODO: Remove once sbt-scalafmt is updated to use scala-collection-compat built against Scala 3
