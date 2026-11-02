@@ -42,7 +42,7 @@ jobs:
         uses: sbt/setup-sbt@v1.5.12
 
       - name: Set up Coursier cache
-        uses: coursier/cache-action@v8
+        uses: coursier/cache-action@v9
 
       - name: Execute Unit Tests
         run: sbt test
@@ -73,7 +73,7 @@ jobs:
         uses: sbt/setup-sbt@v1.5.12
 
       - name: Set up Coursier cache
-        uses: coursier/cache-action@v8
+        uses: coursier/cache-action@v9
 
       - name: Import Signing Key
         uses: crazy-max/ghaction-import-gpg@v7
@@ -113,7 +113,7 @@ jobs:
         uses: sbt/setup-sbt@v1.5.12
 
       - name: Set up Coursier cache
-        uses: coursier/cache-action@v8
+        uses: coursier/cache-action@v9
 
       - name: Generate Documentation
         run: sbt sbt-shuwari-documentation/mdoc
