@@ -2,16 +2,16 @@ package africa.shuwari.sbt
 
 import scala.language.implicitConversions
 
+import sbt.*
 import sbt.Def
 import sbt.Keys.*
 import sbt.URL
-import sbt.*
 import sbtheader.CommentCreator
 import sbtheader.CommentStyle
 import sbtheader.FileType
 import sbtheader.HeaderPlugin
-import sbtheader.HeaderPlugin.autoImport.HeaderPattern
 import sbtheader.HeaderPlugin.autoImport.*
+import sbtheader.HeaderPlugin.autoImport.HeaderPattern
 import sbtheader.License
 import sbtheader.LicenseDetection
 
