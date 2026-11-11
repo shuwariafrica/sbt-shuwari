@@ -13,8 +13,10 @@ Nothing to see here. Internal sbt plugin collection for Shuwari Africa projects.
 | `sbt-shuwari-mode`   | `"africa.shuwari.sbt" % "sbt-shuwari-mode" % "@VERSION@"`    |
 | `sbt-shuwari-header` | `"africa.shuwari.sbt" % "sbt-shuwari-header" % "@VERSION@"`  |
 | `sbt-shuwari-scalac` | `"africa.shuwari.sbt" % "sbt-shuwari-scalac" % "@VERSION@"`  |
+| `sbt-shuwari-js`     | `"africa.shuwari.sbt" % "sbt-shuwari-js" % "@VERSION@"`      |
 
-`sbt-shuwari` bundles `sbt-shuwari-core`, `sbt-shuwari-header`, and `sbt-shuwari-scalac`.
+`sbt-shuwari` bundles `sbt-shuwari-core`, `sbt-shuwari-header`, and `sbt-shuwari-scalac`. `sbt-shuwari-js` is
+separate: it brings in sbt-scalajs and configures the Scala.js linker for each build mode.
 
 ## Licence
 

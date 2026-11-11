@@ -6,7 +6,7 @@ import sbt.Keys.*
 import sbt.ModuleID
 import sbt.Project
 import sbt.Setting
-import sbt.url
+import sbt.uri
 
 object ShuwariCorePluginImports:
 
@@ -26,13 +26,13 @@ object ShuwariCorePluginImports:
     )
     val organisationSettings: List[Setting[?]] = List(
       organizationName := "Shuwari Africa Ltd.",
-      organizationHomepage := Some(url("https://shuwari.africa")),
+      organizationHomepage := Some(uri("https://shuwari.africa")),
       developers := List(
         Developer(
           "shuwari-dev",
           "Shuwari Africa Ltd. Developer Team",
           "https://github.com/shuwariafrica",
-          url("https://shuwari.africa/dev")
+          uri("https://shuwari.africa/dev")
         )
       ),
       versionScheme := Some("semver-spec")

@@ -4,7 +4,6 @@ import sbt.Keys.*
 import sbt.Project
 import sbt.librarymanagement.License
 import sbt.settingKey
-import sbt.url
 
 object ShuwariHeaderImports:
 

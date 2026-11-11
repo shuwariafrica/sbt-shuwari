@@ -1,7 +1,7 @@
 package africa.shuwari.sbt
 
-import sbt.Keys.scalaVersion
 import sbt.*
+import sbt.Keys.scalaVersion
 
 import africa.shuwari.sbt.ScalacOptionsPluginImport.*
 

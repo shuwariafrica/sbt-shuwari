@@ -2,12 +2,10 @@ package africa.shuwari.sbt
 
 import org.scalajs.linker.interface.*
 import org.scalajs.sbtplugin.ScalaJSPlugin
-import org.typelevel.scalacoptions.ScalacOption
-import org.typelevel.scalacoptions.ScalacOptions
 
 import sbt.*
 
-import africa.shuwari.sbt.ScalacKeys.compilerOptions
+import africa.shuwari.sbt.ScalacOptionsPluginImport.*
 
 object JSPlugin extends AutoPlugin:
 
@@ -20,13 +18,13 @@ object JSPlugin extends AutoPlugin:
 
     Seq(
       scalaJSLinkerConfig := defaultLinkerConfigOptions.value,
-      compilerOptions := compilerOptions.value.diff(excludeJSIncompatibleOptions),
-      (Test / compilerOptions) := (Test / compilerOptions).value.diff(excludeJSIncompatibleOptions)
+      compilerOptions := compilerOptions.value.exclude(excludeJSIncompatibleOptions),
+      (Test / compilerOptions) := (Test / compilerOptions).value.exclude(excludeJSIncompatibleOptions)
     )
 
   /** Default Scala.js linker configuration */
   def defaultLinkerConfigOptions: Def.Initialize[StandardConfig] = Def.setting {
-    val basePackages = ScalacKeys.basePackages.value
+    val basePackages = ScalacOptionsPluginImport.basePackages.value
 
     val splitStyle = BuildModePlugin.buildMode.value match
       case BuildModePlugin.Mode.Development =>
@@ -48,19 +46,16 @@ object JSPlugin extends AutoPlugin:
 
   /** Scala.js-incompatible scalac options to be excluded */
   private def excludeJSIncompatibleOptions: Set[ScalacOption] = Set(
-    ScalaCompilerOptions.checkMods, // Modifier checks are JVM-specific
-    ScalaCompilerOptions.checkReentrant // Reentrant checks are JVM-specific
+    ScalacOptions.checkMods, // Modifier checks are JVM-specific
+    ScalacOptions.checkReentrant // Reentrant checks are JVM-specific
   )
 
   /** Optimization level based on build mode */
   private def adjustedLinkerConfig(buildMode: BuildModePlugin.Mode, config: StandardConfig): StandardConfig =
     buildMode match
       case BuildModePlugin.Mode.Development =>
-        config
-          .withClosureCompiler(false) // No advanced optimizations in development mode
-          .withBatchMode(false) // Faster incremental optimization
+        config.withBatchMode(false) // Faster incremental optimization
 
-      case _ => // Assume Integration or Production mode for full optimizations
-        config
-          .withClosureCompiler(true) // Enable Closure Compiler for full optimization
-          .withBatchMode(true) // Best performance for full builds
+      // Integration and Release; `fullLinkJS` applies the Scala.js minifier itself.
+      case _ =>
+        config.withBatchMode(true) // Best performance for full builds

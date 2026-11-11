@@ -1,16 +1,19 @@
 inThisBuild(
   List(
-    scalaVersion := "3.9.0",
+    // sbt compiles a consumer's build definition with its own Scala, which cannot read the TASTy or standard library
+    // of a later minor release. Keep this on the Scala of the oldest sbt release the plugins support (sbt 2.0.x: 3.8).
+    scalaVersion := "3.8.4",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
-    organizationHomepage := Some(url("https://shuwari.africa/dev")),
-    licenses := List("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0")),
+    organizationHomepage := Some(uri("https://shuwari.africa/dev")),
+    licenses := List("Apache-2.0" -> uri("https://www.apache.org/licenses/LICENSE-2.0")),
     description := "Collection of sbt plugins for easy initialisation of uniform organisation wide default project settings.",
-    homepage := Some(url("https://github.com/shuwariafrica/sbt-shuwari")),
+    homepage := Some(uri("https://github.com/shuwariafrica/sbt-shuwari")),
     scmInfo := Some(
       ScmInfo(
-        url("https://github.com/unganisha/sbt-shuwari"),
-        "scm:git@github.com:shuwariafrica/sbt-shuwari.git"
+        uri("https://github.com/shuwariafrica/sbt-shuwari"),
+        "scm:git:https://github.com/shuwariafrica/sbt-shuwari.git",
+        Some("scm:git:git@github.com:shuwariafrica/sbt-shuwari.git")
       )
     ),
     scalacOptions ++= List("-feature", "-deprecation"),
@@ -56,13 +59,13 @@ val `sbt-shuwari` =
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
 
-// val `sbt-shuwari-js` =
-//   project
-//     .in(modules("js"))
-//     .enablePlugins(SbtPlugin)
-// //    .settings(publishSettings)
-//     .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
-//     .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.20.2"))
+val `sbt-shuwari-js` =
+  project
+    .in(modules("js"))
+    .enablePlugins(SbtPlugin)
+    .settings(publishSettings)
+    .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
+    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.22.0"))
 
 val `sbt-shuwari-documentation` =
   project
@@ -88,8 +91,8 @@ val `sbt-shuwari-build-root` =
       `sbt-shuwari-header`,
       `sbt-shuwari-scalac`,
       `sbt-shuwari-core`,
-      `sbt-shuwari`
-      // `sbt-shuwari-js`,
+      `sbt-shuwari`,
+      `sbt-shuwari-js`
     )
 
 def modules(name: String) = file(s"./modules/$name")
@@ -117,7 +120,7 @@ def publishSettings = pgpSettings ++: List(
       id = "shuwaridev",
       name = "Shuwari Developer Team",
       email = "dev at shuwari africa",
-      url = url("https://shuwari.africa/dev")
+      url = uri("https://shuwari.africa/dev")
     )
   ),
   pomIncludeRepository := (_ => false),
