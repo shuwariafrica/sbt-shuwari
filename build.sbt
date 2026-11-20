@@ -1,8 +1,5 @@
 inThisBuild(
   List(
-    // sbt compiles a consumer's build definition with its own Scala, which cannot read the TASTy or standard library
-    // of a later minor release. Keep this on the Scala of the oldest sbt release the plugins support (sbt 2.0.x: 3.8).
-    scalaVersion := "3.8.4",
     organization := "africa.shuwari.sbt",
     organizationName := "Shuwari Africa Ltd.",
     organizationHomepage := Some(uri("https://shuwari.africa/dev")),
@@ -65,7 +62,7 @@ val `sbt-shuwari-js` =
     .enablePlugins(SbtPlugin)
     .settings(publishSettings)
     .dependsOn(`sbt-shuwari-mode`, `sbt-shuwari-scalac`)
-    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.22.0"))
+    .settings(addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.23.0"))
 
 val `sbt-shuwari-documentation` =
   project
@@ -73,6 +70,7 @@ val `sbt-shuwari-documentation` =
     .dependsOn(`sbt-shuwari`)
     .enablePlugins(MdocPlugin)
     .settings(
+      scalaVersion := (`sbt-shuwari` / scalaVersion).value,
       mdocIn := (LocalRootProject / baseDirectory).value / "modules" / "documentation",
       mdocOut := (LocalRootProject / baseDirectory).value,
       mdocVariables := Map(
@@ -97,7 +95,16 @@ val `sbt-shuwari-build-root` =
 
 def modules(name: String) = file(s"./modules/$name")
 
-def publishSettings = pgpSettings ++: List(
+// The plugins are compiled against the oldest sbt line they support, with that line's Scala: sbt compiles a
+// consumer's build definition with its own Scala, which cannot read the TASTy or standard library of a later minor
+// release. The two settings move together (sbt 2.0.x runs Scala 3.8). `SbtPlugin` sets `pluginCrossBuild / sbtVersion`
+// on each project to the running sbt, so the target is set per project rather than in `inThisBuild`.
+def pluginTargetSettings: List[Def.Setting[?]] = List(
+  pluginCrossBuild / sbtVersion := "2.0.12",
+  scalaVersion := "3.8.4"
+)
+
+def publishSettings = pluginTargetSettings ++: pgpSettings ++: List(
   packageOptions +=
     Package.ManifestAttributes(
       "Created-By" -> "Simple Build Tool",
